@@ -1445,6 +1445,10 @@ private:
       }
     }
 
+    kj::Promise<void> sendStreaming() override {
+      KJ_UNIMPLEMENTED("TODO(now)");
+    }
+
     struct TailInfo {
       QuestionId questionId;
       kj::Promise<void> promise;
