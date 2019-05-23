@@ -308,6 +308,11 @@ public:
   virtual void send() = 0;
   // Send the message, or at least put it in a queue to be sent later.  Note that the builder
   // returned by `getBody()` remains valid at least until the `OutgoingRpcMessage` is destroyed.
+
+  virtual size_t sizeInWords() = 0;
+  // Get the total size of the message, for flow control purposes. Although the caller could
+  // also call getBody().targetSize(), doing that would walk the message tree, whereas typical
+  // implementations can compute the size more cheaply by summing segment sizes.
 };
 
 class IncomingRpcMessage {
@@ -317,6 +322,11 @@ public:
   virtual AnyPointer::Reader getBody() = 0;
   // Get the message body, to be interpreted by the caller.  (The standard RPC implementation
   // interprets it as a Message as defined in rpc.capnp.)
+
+  virtual size_t sizeInWords() = 0;
+  // Get the total size of the message, for flow control purposes. Although the caller could
+  // also call getBody().targetSize(), doing that would walk the message tree, whereas typical
+  // implementations can compute the size more cheaply by summing segment sizes.
 };
 
 template <typename VatId, typename ProvisionId, typename RecipientId,

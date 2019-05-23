@@ -106,6 +106,10 @@ public:
       .eagerlyEvaluate(nullptr);
   }
 
+  size_t sizeInWords() override {
+    return message.sizeInWords();
+  }
+
 private:
   TwoPartyVatNetwork& network;
   MallocMessageBuilder message;
@@ -117,6 +121,10 @@ public:
 
   AnyPointer::Reader getBody() override {
     return message->getRoot<AnyPointer>();
+  }
+
+  size_t sizeInWords() override {
+    return message->sizeInWords();
   }
 
 private:

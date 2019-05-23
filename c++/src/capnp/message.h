@@ -126,6 +126,9 @@ public:
   bool isCanonical();
   // Returns whether the message encoded in the reader is in canonical form.
 
+  size_t sizeInWords();
+  // Add up the size of all segments.
+
 private:
   ReaderOptions options;
 
@@ -236,6 +239,9 @@ public:
 
   bool isCanonical();
   // Check whether the message builder is in canonical form
+
+  size_t sizeInWords();
+  // Add up the allocated space from all segments.
 
 private:
   void* arenaSpace[22];
