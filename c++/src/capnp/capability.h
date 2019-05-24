@@ -623,11 +623,6 @@ public:
   // Returns true if the capability was created as a result of assigning a Client to null or by
   // reading a null pointer out of a Cap'n Proto message.
 
-  virtual void* getLocalServer(_::CapabilityServerSetBase& capServerSet);
-  // If this is a local capability created through `capServerSet`, return the underlying Server.
-  // Otherwise, return nullptr. Default implementation (which everyone except LocalClient should
-  // use) always returns nullptr.
-
   static kj::Own<ClientHook> from(Capability::Client client) { return kj::mv(client.hook); }
 };
 
