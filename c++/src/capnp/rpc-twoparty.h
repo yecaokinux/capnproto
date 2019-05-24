@@ -43,7 +43,8 @@ typedef VatNetwork<rpc::twoparty::VatId, rpc::twoparty::ProvisionId,
     TwoPartyVatNetworkBase;
 
 class TwoPartyVatNetwork: public TwoPartyVatNetworkBase,
-                          private TwoPartyVatNetworkBase::Connection {
+                          private TwoPartyVatNetworkBase::Connection,
+                          private RpcFlowController::WindowGetter {
   // A `VatNetwork` that consists of exactly two parties communicating over an arbitrary byte
   // stream.  This is used to implement the common case of a client/server network.
   //
@@ -69,12 +70,16 @@ public:
 private:
   class OutgoingMessageImpl;
   class IncomingMessageImpl;
+  class WindowGetterImpl;
 
   kj::AsyncIoStream& stream;
   rpc::twoparty::Side side;
   MallocMessageBuilder peerVatId;
   ReaderOptions receiveOptions;
   bool accepted = false;
+
+  bool solSndbufUnimplemented = false;
+  // Whether stream.getsockopt(SO_SNDBUF) has been observed to throw UNIMPLEMENTED.
 
   kj::Maybe<kj::Promise<void>> previousWrite;
   // Resolves when the previous write completes.  This effectively serves as the write queue.
@@ -106,10 +111,15 @@ private:
 
   // implements Connection -----------------------------------------------------
 
+  kj::Own<RpcFlowController> newStream() override;
   rpc::twoparty::VatId::Reader getPeerVatId() override;
   kj::Own<OutgoingRpcMessage> newOutgoingMessage(uint firstSegmentWordSize) override;
   kj::Promise<kj::Maybe<kj::Own<IncomingRpcMessage>>> receiveIncomingMessage() override;
   kj::Promise<void> shutdown() override;
+
+  // implements WindowGetter ---------------------------------------------------
+
+  size_t getWindow() override;
 };
 
 class TwoPartyServer: private kj::TaskSet::ErrorHandler {
